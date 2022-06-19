@@ -37,7 +37,7 @@ class TargetDisplay extends HookWidget {
     List<TargetInfo> targetList,
     ValueNotifier<int> nextListInitialOrderState,
   ) {
-    final lackCount =
+    int lackCount =
         nextListInitialOrderState.value + separationNumber - lastTargetOrder;
 
     // 問題が一周した場合は先頭に戻って取得
@@ -45,8 +45,18 @@ class TargetDisplay extends HookWidget {
       final list1 = targetList
           .getRange(nextListInitialOrderState.value, lastTargetOrder)
           .toList();
-      final list2 = targetList.getRange(0, lackCount).toList();
-      list1.addAll(list2);
+      if (lackCount <= lastTargetOrder) {
+        // 問題数の範囲を超えない場合
+        final list2 = targetList.getRange(0, lackCount).toList();
+        list1.addAll(list2);
+      } else {
+        // 問題数の範囲を超える場合、もう一周する
+        final list2 = targetList.getRange(0, lastTargetOrder).toList();
+        list1.addAll(list2);
+        lackCount -= lastTargetOrder;
+        final list3 = targetList.getRange(0, lackCount).toList();
+        list1.addAll(list3);
+      }
 
       candidateTargets.value = list1;
 
@@ -95,10 +105,6 @@ class TargetDisplay extends HookWidget {
     final double middleThreeBlockSize = MediaQuery.of(context).size.width > 450
         ? 100
         : MediaQuery.of(context).size.width * 0.24;
-
-    print(threeBlockSize);
-    print(fourBlockSize);
-    print(middleThreeBlockSize);
 
     // ターゲットの作成
     for (int i = 0; i < lastTargetOrder; i++) {

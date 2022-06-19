@@ -2,9 +2,13 @@ import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:fast_press/data/themes.dart';
+import 'package:fast_press/data/game_themes.dart';
 import 'package:fast_press/models/theme_item.model.dart';
+import 'package:fast_press/models/word_record.model.dart';
+import 'package:fast_press/services/admob/interstitial_action.service.dart';
 import 'package:fast_press/widgets/game_stage/result.widget.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:fast_press/providers/common.provider.dart';
@@ -22,6 +26,7 @@ void finishGame(
   ValueNotifier<int> recordState,
   int themeNumber,
   int clearQuantity,
+  ValueNotifier<InterstitialAd?> interstitialAdState,
 ) async {
   showDialog<int>(
     context: context,
@@ -30,6 +35,56 @@ void finishGame(
       return const FinishModal();
     },
   );
+
+  bool isWR = false;
+
+  final WorldRecord worldRecord = context.read(wordRecordProvider).state;
+  Map<int, int> difficultyWR = difficulty == 1
+      ? worldRecord.normal
+      : difficulty == 2
+          ? worldRecord.hard
+          : worldRecord.veryHard;
+  int thisWR = difficultyWR[themeNumber] ?? 0;
+  final String targetDifficulty = difficulty == 1
+      ? 'normal'
+      : difficulty == 2
+          ? 'hard'
+          : 'veryHard';
+
+  // WRを超えていた場合
+  if (recordState.value > thisWR) {
+    DatabaseReference firebaseInstance = FirebaseDatabase.instance
+        .ref()
+        .child('worldRecord/$targetDifficulty/$themeNumber');
+
+    await firebaseInstance.get().then((DataSnapshot? snapshot) {
+      if (snapshot != null) {
+        final Map firebaseData = snapshot.value as Map;
+
+        final int bestRecord = firebaseData['bestRecord'] as int;
+
+        if (recordState.value > bestRecord) {
+          firebaseInstance.set({
+            'bestRecord': recordState.value,
+          });
+
+          thisWR = recordState.value;
+          isWR = true;
+
+          difficultyWR[themeNumber] = thisWR;
+          context.read(wordRecordProvider).state = WorldRecord(
+            normal: difficulty == 1 ? difficultyWR : worldRecord.normal,
+            hard: difficulty == 2 ? difficultyWR : worldRecord.hard,
+            veryHard: difficulty == 3 ? difficultyWR : worldRecord.veryHard,
+          );
+        } else {
+          thisWR = bestRecord;
+        }
+      }
+    }).onError((error, stackTrace) =>
+        // 何もしない
+        null);
+  }
 
   // クリア判定
   final isGreaterRecord = recordState.value > previousRecord;
@@ -67,7 +122,7 @@ void finishGame(
     final normalClearedNumber = context.read(normalClearedNumberProvider).state;
 
     if (themeNumber <= normalClearedNumber &&
-        normalClearedNumber < themes.length) {
+        normalClearedNumber < gameThemes.length) {
       // 次の問題に進むボタンを出すか判定
       nextOpen = true;
     } else if (themeNumber > normalClearedNumber &&
@@ -101,7 +156,8 @@ void finishGame(
 
     final hardClearedNumber = context.read(hardClearedNumberProvider).state;
 
-    if (themeNumber <= hardClearedNumber && hardClearedNumber < themes.length) {
+    if (themeNumber <= hardClearedNumber &&
+        hardClearedNumber < gameThemes.length) {
       nextOpen = true;
     } else if (themeNumber > hardClearedNumber &&
         previousRecord != 0 &&
@@ -135,7 +191,7 @@ void finishGame(
         context.read(veryHardClearedNumberProvider).state;
 
     if (themeNumber <= veryHardClearedNumber &&
-        veryHardClearedNumber < themes.length) {
+        veryHardClearedNumber < gameThemes.length) {
       nextOpen = true;
     } else if (themeNumber > veryHardClearedNumber &&
         previousRecord != 0 &&
@@ -157,7 +213,17 @@ void finishGame(
       volume: seVolume,
     );
   } else {
-    // 広告を表示
+    if (interstitialAdState.value != null) {
+      // 広告を表示する
+      showInterstitialAd(
+        context,
+        interstitialAdState,
+      );
+    }
+
+    await Future.delayed(
+      const Duration(milliseconds: 1000),
+    );
   }
 
   AwesomeDialog(
@@ -192,6 +258,8 @@ void finishGame(
       nextOpen: nextOpen,
       giveUpOk: giveUpOk,
       isCleared: isCleared,
+      thisWR: thisWR,
+      isWR: isWR,
     ),
   ).show();
 }

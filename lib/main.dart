@@ -4,15 +4,17 @@ import 'package:fast_press/providers/common.provider.dart';
 import 'package:fast_press/screens/game_play.screen.dart';
 import 'package:fast_press/screens/stage_select.screen.dart';
 import 'package:fast_press/screens/title.screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await Firebase.initializeApp();
-  // MobileAds.instance.initialize();
+  await Firebase.initializeApp();
+  MobileAds.instance.initialize();
 
   runApp(
     ProviderScope(

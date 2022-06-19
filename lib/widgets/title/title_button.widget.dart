@@ -93,6 +93,19 @@ class TitleButton extends HookWidget {
               width: MediaQuery.of(context).size.width * .86 > 500 ? 500 : null,
               body: SoundMode(soundEffect: soundEffect),
             ).show();
+
+            // データ作成用
+            // for (String target in ['normal', 'hard', 'veryHard']) {
+            //   for (int i = 1; i <= 100; i++) {
+            //     DatabaseReference firebaseInstance = FirebaseDatabase.instance
+            //         .ref()
+            //         .child('worldRecord/$target/$i');
+
+            //     firebaseInstance.set({
+            //       'bestRecord': 0,
+            //     });
+            //   }
+            // }
           }
         },
       ),

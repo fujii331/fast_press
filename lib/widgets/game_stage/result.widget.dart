@@ -1,11 +1,12 @@
 import 'package:audioplayers/audioplayers.dart';
-import 'package:fast_press/data/themes.dart';
+import 'package:fast_press/data/game_themes.dart';
 import 'package:fast_press/models/theme_item.model.dart';
 import 'package:fast_press/screens/game_play.screen.dart';
 import 'package:fast_press/screens/stage_select.screen.dart';
 import 'package:fast_press/widgets/game_stage/give_up.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class Result extends HookWidget {
   final BuildContext screenContext;
@@ -22,6 +23,8 @@ class Result extends HookWidget {
   final bool nextOpen;
   final bool giveUpOk;
   final bool isCleared;
+  final int thisWR;
+  final bool isWR;
 
   const Result({
     Key? key,
@@ -39,6 +42,8 @@ class Result extends HookWidget {
     required this.nextOpen,
     required this.giveUpOk,
     required this.isCleared,
+    required this.thisWR,
+    required this.isWR,
   }) : super(key: key);
 
   @override
@@ -46,6 +51,7 @@ class Result extends HookWidget {
     final displayResultState = useState<bool>(true);
     final displayGiveUpState = useState<bool>(false);
     final clearWord = isCleared ? 'Cleared!' : 'Not Cleared...';
+    final ValueNotifier<RewardedAd?> rewardedAdState = useState(null);
 
     return Padding(
       padding: const EdgeInsets.only(
@@ -162,6 +168,14 @@ class Result extends HookWidget {
                                   color: Colors.black,
                                 ),
                               ),
+                              SizedBox(height: 5),
+                              Text(
+                                '世界記録',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black,
+                                ),
+                              ),
                             ],
                           ),
                           const SizedBox(width: 30),
@@ -191,6 +205,14 @@ class Result extends HookWidget {
                                   color: isGreaterRecord
                                       ? Colors.red
                                       : Colors.black,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                thisWR != 0 ? '$thisWR 回' : '-　',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: isWR ? Colors.red : Colors.black,
                                 ),
                               ),
                             ],
@@ -316,7 +338,7 @@ class Result extends HookWidget {
                                     Navigator.of(screenContext).pushNamed(
                                       GamePlayScreen.routeName,
                                       arguments: [
-                                        themes[themeNumber],
+                                        gameThemes[themeNumber],
                                         difficulty,
                                         0,
                                         themeNumber + 1,
@@ -383,6 +405,7 @@ class Result extends HookWidget {
               themeNumber: themeNumber,
               displayResultState: displayResultState,
               displayGiveUpState: displayGiveUpState,
+              rewardedAdState: rewardedAdState,
             ),
     );
   }

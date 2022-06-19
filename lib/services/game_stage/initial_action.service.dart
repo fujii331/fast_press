@@ -3,6 +3,7 @@ import 'package:fast_press/services/game_stage/time_start.service.dart';
 import 'package:fast_press/widgets/game_stage/ready_modal.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void initialAction(
   BuildContext context,
@@ -16,6 +17,7 @@ void initialAction(
   ValueNotifier<int> recordState,
   int themeNumber,
   int clearQuantity,
+  ValueNotifier<InterstitialAd?> interstitialAdState,
 ) async {
   // カウントダウン表示
   showDialog<int>(
@@ -52,5 +54,6 @@ void initialAction(
     recordState,
     themeNumber,
     clearQuantity,
+    interstitialAdState,
   );
 }

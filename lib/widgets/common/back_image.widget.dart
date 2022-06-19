@@ -21,7 +21,7 @@ class BackImage extends StatelessWidget {
           ),
         ),
         Opacity(
-          opacity: 0.7,
+          opacity: 0.65,
           child: Container(
             decoration: BoxDecoration(
               image: DecorationImage(

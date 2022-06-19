@@ -5,6 +5,7 @@ import 'package:fast_press/models/theme_item.model.dart';
 import 'package:fast_press/services/game_stage/finish_game.service.dart';
 
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void timeStart(
   BuildContext context,
@@ -18,6 +19,7 @@ void timeStart(
   ValueNotifier<int> recordState,
   int themeNumber,
   int clearQuantity,
+  ValueNotifier<InterstitialAd?> interstitialAdState,
 ) {
   Timer.periodic(
     const Duration(milliseconds: 100),
@@ -34,6 +36,7 @@ void timeStart(
           recordState,
           themeNumber,
           clearQuantity,
+          interstitialAdState,
         );
 
         timer.cancel();

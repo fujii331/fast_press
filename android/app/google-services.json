@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "220223462274",
+    "project_id": "fast-press-db551",
+    "storage_bucket": "fast-press-db551.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:220223462274:android:a117d0a48919bc6a43cd9b",
+        "android_client_info": {
+          "package_name": "io.github.naoto613.fast_press"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "220223462274-sqtg9s3ftlthevpor8m2br5chuhcdsfb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNgNGpor9pqwLF1lIpp2MbNxfTlmExhTI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "220223462274-sqtg9s3ftlthevpor8m2br5chuhcdsfb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

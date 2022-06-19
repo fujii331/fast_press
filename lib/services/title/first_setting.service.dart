@@ -1,4 +1,6 @@
+import 'package:fast_press/models/word_record.model.dart';
 import 'package:fast_press/providers/common.provider.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -55,4 +57,59 @@ void firstSetting(BuildContext context) async {
     'sounds/tap.mp3',
     'sounds/true.mp3',
   ]);
+
+  // WRを設定
+  DatabaseReference firebaseInstance =
+      FirebaseDatabase.instance.ref().child('worldRecord/');
+
+  await firebaseInstance.get().then((DataSnapshot? snapshot) async {
+    if (snapshot != null) {
+      Map snapshotData = snapshot.value as Map;
+
+      // Normal
+      final Map<int, int> normalWR = {};
+      int key = 1;
+      snapshotData['normal']
+          .where((data) => data != null)
+          .toList()
+          .forEach((value) {
+        normalWR[key] = value['bestRecord'];
+
+        key++;
+      });
+
+      // Hard
+      final Map<int, int> hardWR = {};
+      key = 1;
+      snapshotData['hard']
+          .where((data) => data != null)
+          .toList()
+          .forEach((value) {
+        hardWR[key] = value['bestRecord'];
+
+        key++;
+      });
+
+      // VeryHard
+      final Map<int, int> veryHardWR = {};
+      key = 1;
+      snapshotData['veryHard']
+          .where((data) => data != null)
+          .toList()
+          .forEach((value) {
+        veryHardWR[key] = value['bestRecord'];
+
+        key++;
+      });
+
+      // WRのリストを設定
+      context.read(wordRecordProvider).state = WorldRecord(
+        normal: normalWR,
+        hard: hardWR,
+        veryHard: veryHardWR,
+      );
+    }
+  }).catchError((_) {
+    // 何もしない
+  });
 }

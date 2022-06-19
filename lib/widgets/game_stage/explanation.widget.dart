@@ -1,10 +1,15 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:fast_press/models/theme_item.model.dart';
+import 'package:fast_press/models/word_record.model.dart';
+import 'package:fast_press/providers/common.provider.dart';
 import 'package:fast_press/screens/game_play.screen.dart';
 import 'package:fast_press/screens/stage_select.screen.dart';
+import 'package:fast_press/services/admob/interstitial_action.service.dart';
 import 'package:fast_press/services/game_stage/initial_action.service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class Explanation extends HookWidget {
   final BuildContext screenContext;
@@ -18,6 +23,7 @@ class Explanation extends HookWidget {
   final ValueNotifier<double> remainingTimeState;
   final bool isInitial;
   final int themeNumber;
+  final ValueNotifier<InterstitialAd?> interstitialAdState;
 
   const Explanation({
     Key? key,
@@ -32,12 +38,19 @@ class Explanation extends HookWidget {
     required this.remainingTimeState,
     required this.isInitial,
     required this.themeNumber,
+    required this.interstitialAdState,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final isNormal = difficulty == 1;
-    final clearQuantity = themeItem.clearQuantity - 20; // + (isNormal ? 0 : 5);
+    final clearQuantity = themeItem.clearQuantity; // + (isNormal ? 0 : 5);
+    final WorldRecord worldRecord = useProvider(wordRecordProvider).state;
+    final Map<int, int> difficultyWR = difficulty == 1
+        ? worldRecord.normal
+        : difficulty == 2
+            ? worldRecord.hard
+            : worldRecord.veryHard;
+    final int thisWR = difficultyWR[themeNumber] ?? 0;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -170,6 +183,14 @@ class Explanation extends HookWidget {
                           color: Colors.black,
                         ),
                       ),
+                      SizedBox(height: 5),
+                      Text(
+                        '世界記録',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(width: 30),
@@ -186,6 +207,14 @@ class Explanation extends HookWidget {
                       const SizedBox(height: 5),
                       Text(
                         '$previousRecord 回',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        thisWR != 0 ? '$thisWR 回' : '-　',
                         style: const TextStyle(
                           fontSize: 14,
                           color: Colors.black,
@@ -215,24 +244,34 @@ class Explanation extends HookWidget {
                       color: Colors.red.shade600,
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     soundEffect.play(
                       'sounds/cancel.mp3',
                       isNotification: true,
                       volume: seVolume,
                     );
 
+                    if (!isInitial) {
+                      // タイマーをストップ
+                      remainingTimeState.value = 0;
+
+                      if (interstitialAdState.value != null) {
+                        // 広告を表示する
+                        showInterstitialAd(
+                          context,
+                          interstitialAdState,
+                        );
+                      }
+
+                      await Future.delayed(
+                        const Duration(milliseconds: 1000),
+                      );
+                    }
+
                     Navigator.popUntil(
                       screenContext,
                       ModalRoute.withName(StageSelectScreen.routeName),
                     );
-
-                    if (!isInitial) {
-                      // タイマーをストップ
-                      remainingTimeState.value = 0;
-                      // 広告を入れる
-
-                    }
                   },
                   child: const Padding(
                     padding: EdgeInsets.only(top: 2.5),
@@ -282,9 +321,10 @@ class Explanation extends HookWidget {
                             recordState,
                             themeNumber,
                             clearQuantity,
+                            interstitialAdState,
                           );
                         }
-                      : () {
+                      : () async {
                           soundEffect.play(
                             'sounds/tap.mp3',
                             isNotification: true,
@@ -292,7 +332,17 @@ class Explanation extends HookWidget {
                           );
                           remainingTimeState.value = 0;
 
-                          // 広告を入れる
+                          if (interstitialAdState.value != null) {
+                            // 広告を表示する
+                            showInterstitialAd(
+                              context,
+                              interstitialAdState,
+                            );
+
+                            await Future.delayed(
+                              const Duration(milliseconds: 1000),
+                            );
+                          }
 
                           Navigator.of(screenContext).pushReplacementNamed(
                             GamePlayScreen.routeName,

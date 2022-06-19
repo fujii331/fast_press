@@ -1,7 +1,8 @@
 import 'dart:io';
 
-import 'package:fast_press/data/themes.dart';
+import 'package:fast_press/data/game_themes.dart';
 import 'package:fast_press/models/theme_item.model.dart';
+import 'package:fast_press/models/word_record.model.dart';
 import 'package:fast_press/providers/common.provider.dart';
 import 'package:fast_press/screens/game_play.screen.dart';
 import 'package:flutter/material.dart';
@@ -49,13 +50,19 @@ class StageSelectScreen extends HookWidget {
     final screenNo = useState<int>(0);
     final pageController = usePageController(initialPage: 0, keepPage: true);
 
+    final WorldRecord worldRecord = useProvider(wordRecordProvider).state;
+    final Map<int, int> normalWR = worldRecord.normal;
+    final Map<int, int> hardWR = worldRecord.hard;
+    final Map<int, int> veryHardWR = worldRecord.veryHard;
+
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         // Normalを設定
         normalItemsState.value = [];
 
         for (int i = 0; i < normalRecords.length; i++) {
-          final themeItem = themes[i];
+          final themeItem = gameThemes[i];
+          final int thisWR = normalWR[i + 1] ?? 0;
           normalItemsState.value.insert(
             0,
             _block(
@@ -66,16 +73,17 @@ class StageSelectScreen extends HookWidget {
               int.parse(normalRecords[i]),
               themeItem,
               i + 1,
+              thisWR,
             ),
           );
         }
         for (int i = normalRecords.length; i < normalRecords.length + 3; i++) {
-          if (i == themes.length) {
+          if (i == gameThemes.length) {
             // これ以上問題がない場合
             normalItemsState.value.insert(0, _preparationBlock());
             break;
           } else if (i == normalRecords.length && i == normalClearedNumber) {
-            final themeItem = themes[i];
+            final themeItem = gameThemes[i];
             normalItemsState.value.insert(
                 0,
                 _block(
@@ -86,9 +94,10 @@ class StageSelectScreen extends HookWidget {
                   0,
                   themeItem,
                   i + 1,
+                  0,
                 ));
           } else {
-            final themeItem = themes[i];
+            final themeItem = gameThemes[i];
             normalItemsState.value.insert(
               0,
               _cannotPlayBlock(themeItem),
@@ -96,11 +105,20 @@ class StageSelectScreen extends HookWidget {
             break;
           }
         }
+
+        final normalRemainingWIdth = width - normalItemsState.value.length * 70;
+
+        if (normalRemainingWIdth > 70) {
+          final double normalBoxWidth = 70.0 * (normalRemainingWIdth ~/ 70);
+          normalItemsState.value.add(SizedBox(width: normalBoxWidth));
+        }
+
         // Hardを設定
         hardItemsState.value = [];
 
         for (int i = 0; i < hardRecords.length; i++) {
-          final themeItem = themes[i];
+          final themeItem = gameThemes[i];
+          final int thisWR = hardWR[i + 1] ?? 0;
           hardItemsState.value.insert(
             0,
             _block(
@@ -111,16 +129,17 @@ class StageSelectScreen extends HookWidget {
               int.parse(hardRecords[i]),
               themeItem,
               i + 1,
+              thisWR,
             ),
           );
         }
         for (int i = hardRecords.length; i < hardRecords.length + 3; i++) {
-          if (i == themes.length) {
+          if (i == gameThemes.length) {
             // これ以上問題がない場合
             hardItemsState.value.insert(0, _preparationBlock());
             break;
           } else if (i == hardRecords.length && i == hardClearedNumber) {
-            final themeItem = themes[i];
+            final themeItem = gameThemes[i];
             hardItemsState.value.insert(
                 0,
                 _block(
@@ -131,9 +150,10 @@ class StageSelectScreen extends HookWidget {
                   0,
                   themeItem,
                   i + 1,
+                  0,
                 ));
           } else {
-            final themeItem = themes[i];
+            final themeItem = gameThemes[i];
             hardItemsState.value.insert(
               0,
               _cannotPlayBlock(themeItem),
@@ -142,11 +162,19 @@ class StageSelectScreen extends HookWidget {
           }
         }
 
+        final hardRemainingWIdth = width - hardItemsState.value.length * 70;
+
+        if (hardRemainingWIdth > 70) {
+          final double hardBoxWidth = 70.0 * (hardRemainingWIdth ~/ 70);
+          hardItemsState.value.add(SizedBox(width: hardBoxWidth));
+        }
+
         // Very Hardを設定
         veryHardItemsState.value = [];
 
         for (int i = 0; i < veryHardRecords.length; i++) {
-          final themeItem = themes[i];
+          final themeItem = gameThemes[i];
+          final int thisWR = veryHardWR[i + 1] ?? 0;
           veryHardItemsState.value.insert(
             0,
             _block(
@@ -157,19 +185,20 @@ class StageSelectScreen extends HookWidget {
               int.parse(veryHardRecords[i]),
               themeItem,
               i + 1,
+              thisWR,
             ),
           );
         }
         for (int i = veryHardRecords.length;
             i < veryHardRecords.length + 3;
             i++) {
-          if (i == themes.length) {
+          if (i == gameThemes.length) {
             // これ以上問題がない場合
             veryHardItemsState.value.insert(0, _preparationBlock());
             break;
           } else if (i == veryHardRecords.length &&
               i == veryHardClearedNumber) {
-            final themeItem = themes[i];
+            final themeItem = gameThemes[i];
             veryHardItemsState.value.insert(
                 0,
                 _block(
@@ -180,15 +209,24 @@ class StageSelectScreen extends HookWidget {
                   0,
                   themeItem,
                   i + 1,
+                  0,
                 ));
           } else {
-            final themeItem = themes[i];
+            final themeItem = gameThemes[i];
             veryHardItemsState.value.insert(
               0,
               _cannotPlayBlock(themeItem),
             );
             break;
           }
+        }
+
+        final veryHardRemainingWIdth =
+            width - veryHardItemsState.value.length * 70;
+
+        if (veryHardRemainingWIdth > 70) {
+          final double veryHardBoxWidth = 70.0 * (veryHardRemainingWIdth ~/ 70);
+          veryHardItemsState.value.add(SizedBox(width: veryHardBoxWidth));
         }
       });
       return null;
@@ -317,6 +355,7 @@ class StageSelectScreen extends HookWidget {
     int previousRecord,
     ThemeItem themeItem,
     int themeNumber,
+    int thisWR,
   ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
@@ -377,22 +416,37 @@ class StageSelectScreen extends HookWidget {
               ),
             ),
             previousRecord >= themeItem.clearQuantity
-                ? Padding(
-                    padding: const EdgeInsets.only(
-                      left: 43,
-                      top: 2,
-                    ),
-                    child: Container(
-                      height: 15,
-                      width: 15,
-                      decoration: const BoxDecoration(
-                        image: DecorationImage(
-                          fit: BoxFit.fitWidth,
-                          image: AssetImage('assets/images/check.png'),
+                ? previousRecord == thisWR
+                    ? const Padding(
+                        padding: EdgeInsets.only(
+                          left: 37,
                         ),
-                      ),
-                    ),
-                  )
+                        child: Text(
+                          'WR',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'MPLUS1p',
+                          ),
+                        ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.only(
+                          left: 43,
+                          top: 2,
+                        ),
+                        child: Container(
+                          height: 15,
+                          width: 15,
+                          decoration: const BoxDecoration(
+                            image: DecorationImage(
+                              fit: BoxFit.fitWidth,
+                              image: AssetImage('assets/images/check.png'),
+                            ),
+                          ),
+                        ),
+                      )
                 : Container()
           ],
         ),

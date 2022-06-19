@@ -1,7 +1,7 @@
 class WorldRecord {
-  final List<int> normal;
-  final List<int> hard;
-  final List<int> veryHard;
+  final Map<int, int> normal;
+  final Map<int, int> hard;
+  final Map<int, int> veryHard;
 
   const WorldRecord({
     required this.normal,

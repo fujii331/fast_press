@@ -32,7 +32,12 @@ class TitleScreen extends HookWidget {
           Center(
             child: Column(
               children: <Widget>[
-                SizedBox(height: heightOk ? 150 : 50),
+                SizedBox(
+                    height: height > 670
+                        ? 150
+                        : height > 620
+                            ? 100
+                            : 50),
                 const TitleWord(),
                 const Spacer(),
                 const TitleButton(),

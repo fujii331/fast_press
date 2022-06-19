@@ -1,12 +1,14 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:fast_press/models/theme_item.model.dart';
 import 'package:fast_press/providers/common.provider.dart';
+import 'package:fast_press/services/admob/interstitial_action.service.dart';
 import 'package:fast_press/widgets/common/back_image.widget.dart';
 import 'package:fast_press/widgets/game_stage/explanation.widget.dart';
 import 'package:fast_press/widgets/game_stage/target_display.widget.dart';
 import 'package:fast_press/widgets/game_stage/top_row.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:audioplayers/audioplayers.dart';
 
@@ -33,6 +35,8 @@ class GamePlayScreen extends HookWidget {
     final recordState = useState<int>(0);
 
     final recordMinusState = useState<bool>(false);
+
+    final ValueNotifier<InterstitialAd?> interstitialAdState = useState(null);
 
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -65,8 +69,14 @@ class GamePlayScreen extends HookWidget {
             remainingTimeState: remainingTimeState,
             isInitial: true,
             themeNumber: themeNumber,
+            interstitialAdState: interstitialAdState,
           ),
         ).show();
+
+        // 広告読み込み
+        interstitialLoading(
+          interstitialAdState,
+        );
       });
       return null;
     }, []);
@@ -87,16 +97,18 @@ class GamePlayScreen extends HookWidget {
               child: Column(
                 children: [
                   TopRow(
-                      soundEffect: soundEffect,
-                      seVolume: seVolume,
-                      themeItem: themeItem,
-                      difficulty: difficulty,
-                      previousRecord: previousRecord,
-                      timerPlayingState: timerPlayingState,
-                      remainingTimeState: remainingTimeState,
-                      recordState: recordState,
-                      themeNumber: themeNumber,
-                      recordMinus: recordMinusState.value),
+                    soundEffect: soundEffect,
+                    seVolume: seVolume,
+                    themeItem: themeItem,
+                    difficulty: difficulty,
+                    previousRecord: previousRecord,
+                    timerPlayingState: timerPlayingState,
+                    remainingTimeState: remainingTimeState,
+                    recordState: recordState,
+                    themeNumber: themeNumber,
+                    recordMinus: recordMinusState.value,
+                    interstitialAdState: interstitialAdState,
+                  ),
                   const Spacer(),
                   TargetDisplay(
                     soundEffect: soundEffect,

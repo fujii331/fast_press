@@ -128,7 +128,11 @@ class TargetBlock extends HookWidget {
                   )
                 : Center(
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 5),
+                      padding: const EdgeInsets.only(
+                        top: 5,
+                        left: 2,
+                        right: 2,
+                      ),
                       child: Text(
                         targetContent,
                         style: TextStyle(

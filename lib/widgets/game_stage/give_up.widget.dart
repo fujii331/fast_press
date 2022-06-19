@@ -1,13 +1,12 @@
 import 'package:audioplayers/audioplayers.dart';
-import 'package:fast_press/data/themes.dart';
-import 'package:fast_press/providers/common.provider.dart';
-import 'package:fast_press/screens/game_play.screen.dart';
-import 'package:fast_press/screens/stage_select.screen.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:fast_press/services/admob/reward_action.service.dart';
+import 'package:fast_press/widgets/common/comment_modal.widget.dart';
+import 'package:fast_press/widgets/common/loading_modal.widget.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class GiveUp extends HookWidget {
   final BuildContext screenContext;
@@ -17,6 +16,7 @@ class GiveUp extends HookWidget {
   final int themeNumber;
   final ValueNotifier<bool> displayResultState;
   final ValueNotifier<bool> displayGiveUpState;
+  final ValueNotifier<RewardedAd?> rewardedAdState;
 
   const GiveUp({
     Key? key,
@@ -27,6 +27,7 @@ class GiveUp extends HookWidget {
     required this.themeNumber,
     required this.displayResultState,
     required this.displayGiveUpState,
+    required this.rewardedAdState,
   }) : super(key: key);
 
   @override
@@ -117,77 +118,54 @@ class GiveUp extends HookWidget {
                         ),
                       ),
                       onPressed: () async {
-                        SharedPreferences prefs =
-                            await SharedPreferences.getInstance();
-
                         soundEffect.play(
                           'sounds/tap.mp3',
                           isNotification: true,
                           volume: seVolume,
                         );
 
-                        // 広告を見せる
-                        if (difficulty == 1) {
-                          if (context.read(normalRecordsProvider).state.length <
-                              themeNumber) {
-                            context.read(normalRecordsProvider).state.add('0');
-                          }
-
-                          prefs.setStringList('normalRecords',
-                              context.read(normalRecordsProvider).state);
-
-                          context.read(normalClearedNumberProvider).state =
-                              themeNumber;
-                          prefs.setInt('normalClearedNumber', themeNumber);
-                        } else if (difficulty == 2) {
-                          if (context.read(hardRecordsProvider).state.length <
-                              themeNumber) {
-                            context.read(hardRecordsProvider).state.add('0');
-                          }
-                          prefs.setStringList('hardRecords',
-                              context.read(hardRecordsProvider).state);
-
-                          context.read(hardClearedNumberProvider).state =
-                              themeNumber;
-                          prefs.setInt('hardClearedNumber', themeNumber);
-                        } else if (difficulty == 3) {
-                          if (context
-                                  .read(veryHardRecordsProvider)
-                                  .state
-                                  .length <
-                              themeNumber) {
-                            context
-                                .read(veryHardRecordsProvider)
-                                .state
-                                .add('0');
-                          }
-                          prefs.setStringList('veryHardRecords',
-                              context.read(veryHardRecordsProvider).state);
-
-                          context.read(veryHardClearedNumberProvider).state =
-                              themeNumber;
-                          prefs.setInt('veryHardClearedNumber', themeNumber);
-                        }
-
-                        context.read(rebuildProvider).state =
-                            !context.read(rebuildProvider).state;
-
-                        Navigator.popUntil(
-                          screenContext,
-                          ModalRoute.withName(
-                            StageSelectScreen.routeName,
-                          ),
+                        // ロード中モーダルの表示
+                        showDialog<int>(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return const LoadingModal();
+                          },
                         );
-
-                        Navigator.of(screenContext).pushNamed(
-                          GamePlayScreen.routeName,
-                          arguments: [
-                            themes[themeNumber],
+                        // 広告のロード
+                        await rewardLoading(
+                          rewardedAdState,
+                        );
+                        if (rewardedAdState.value != null) {
+                          showRewardedAd(
+                            screenContext,
+                            rewardedAdState,
                             difficulty,
-                            0,
-                            themeNumber + 1,
-                          ],
-                        );
+                            themeNumber,
+                          );
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        } else {
+                          Navigator.pop(context);
+                          AwesomeDialog(
+                            context: context,
+                            dialogType: DialogType.NO_HEADER,
+                            headerAnimationLoop: false,
+                            dismissOnTouchOutside: true,
+                            dismissOnBackKeyPress: true,
+                            showCloseIcon: true,
+                            animType: AnimType.SCALE,
+                            width: MediaQuery.of(context).size.width * .86 > 550
+                                ? 550
+                                : null,
+                            body: const CommentModal(
+                              topText: '取得失敗',
+                              secondText:
+                                  '動画の読み込みに失敗しました。\n電波の良いところで再度お試しください。',
+                              closeButtonFlg: true,
+                            ),
+                          ).show();
+                        }
                       },
                       child: const Padding(
                         padding: EdgeInsets.only(top: 2.5),

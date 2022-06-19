@@ -1,70 +1,69 @@
-// import 'dart:io';
+import 'dart:io';
 
-// import 'package:google_mobile_ads/google_mobile_ads.dart';
-// import 'package:flutter/material.dart';
-// import 'package:king_of_lateral_thinking_2/data/advertising.dart';
+import 'package:fast_press/data/advertising.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:flutter/material.dart';
 
-// void showInterstitialAd(
-//   BuildContext context,
-//   ValueNotifier<InterstitialAd?> interstitialAd,
-// ) async {
-//   if (interstitialAd.value == null) {
-//     return;
-//   }
-//   interstitialAd.value!.fullScreenContentCallback = FullScreenContentCallback(
-//     onAdDismissedFullScreenContent: (InterstitialAd ad) {
-//       ad.dispose();
-//     },
-//     onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
-//       ad.dispose();
-//     },
-//   );
-//   interstitialAd.value!.show();
-//   interstitialAd.value = null;
-// }
+void showInterstitialAd(
+  BuildContext context,
+  ValueNotifier<InterstitialAd?> interstitialAdState,
+) async {
+  if (interstitialAdState.value == null) {
+    return;
+  }
+  interstitialAdState.value!.fullScreenContentCallback =
+      FullScreenContentCallback(
+    onAdDismissedFullScreenContent: (InterstitialAd ad) {
+      ad.dispose();
+    },
+    onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+      ad.dispose();
+    },
+  );
+  interstitialAdState.value!.show();
+  interstitialAdState.value = null;
+}
 
-// void createInterstitialAd(
-//   ValueNotifier<InterstitialAd?> interstitialAd,
-//   int _numInterstitialLoadAttempts,
-// ) {
-//   InterstitialAd.load(
-//     adUnitId: Platform.isAndroid
-//         ? androidAnsweredInterstitalAdvid
-//         : iosAnsweredInterstitalAdvid,
-//     // adUnitId: InterstitialAd.testAdUnitId,
-//     request: const AdRequest(),
-//     adLoadCallback: InterstitialAdLoadCallback(
-//       onAdLoaded: (InterstitialAd ad) {
-//         interstitialAd.value = ad;
-//         _numInterstitialLoadAttempts = 0;
-//         interstitialAd.value!.setImmersiveMode(true);
-//       },
-//       onAdFailedToLoad: (LoadAdError error) {
-//         _numInterstitialLoadAttempts += 1;
-//         interstitialAd.value = null;
-//         if (_numInterstitialLoadAttempts <= 3) {
-//           createInterstitialAd(
-//             interstitialAd,
-//             _numInterstitialLoadAttempts,
-//           );
-//         }
-//       },
-//     ),
-//   );
-// }
+void createInterstitialAd(
+  ValueNotifier<InterstitialAd?> interstitialAdState,
+  int numInterstitialLoadAttempts,
+) {
+  InterstitialAd.load(
+    adUnitId:
+        Platform.isAndroid ? androidInterstitalAdvid : iosInterstitalAdvid,
+    request: const AdRequest(),
+    adLoadCallback: InterstitialAdLoadCallback(
+      onAdLoaded: (InterstitialAd ad) {
+        interstitialAdState.value = ad;
+        numInterstitialLoadAttempts = 0;
+        interstitialAdState.value!.setImmersiveMode(true);
+      },
+      onAdFailedToLoad: (LoadAdError error) {
+        numInterstitialLoadAttempts += 1;
+        interstitialAdState.value = null;
+        if (numInterstitialLoadAttempts <= 3) {
+          createInterstitialAd(
+            interstitialAdState,
+            numInterstitialLoadAttempts,
+          );
+        }
+      },
+    ),
+  );
+}
 
-// Future interstitialLoading(
-//   ValueNotifier<InterstitialAd?> interstitialAd,
-// ) async {
-//   int _numInterstitialLoadAttempts = 0;
-//   createInterstitialAd(
-//     interstitialAd,
-//     _numInterstitialLoadAttempts,
-//   );
-//   for (int i = 0; i < 10; i++) {
-//     if (i > 2 && interstitialAd.value != null) {
-//       break;
-//     }
-//     await Future.delayed(const Duration(seconds: 1));
-//   }
-// }
+Future interstitialLoading(
+  ValueNotifier<InterstitialAd?> interstitialAdState,
+) async {
+  int numInterstitialLoadAttempts = 0;
+  createInterstitialAd(
+    interstitialAdState,
+    numInterstitialLoadAttempts,
+  );
+  for (int i = 0; i < 10; i++) {
+    if (i > 2 && interstitialAdState.value != null) {
+      break;
+    }
+    await Future.delayed(const Duration(seconds: 1));
+  }
+}
