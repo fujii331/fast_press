@@ -1,6 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:fast_press/providers/common.provider.dart';
+import 'package:fast_press/screens/original_making_list.screen.dart';
 import 'package:fast_press/screens/stage_select.screen.dart';
 import 'package:fast_press/widgets/title/sound_mode.widget.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,7 @@ class TitleButton extends HookWidget {
       children: [
         _selectButton(
           context,
-          '　遊ぶ　',
+          '　遊ぶ　 ',
           Colors.brown,
           const Icon(Icons.play_arrow),
           soundEffect,
@@ -31,11 +32,21 @@ class TitleButton extends HookWidget {
         const SizedBox(height: 25),
         _selectButton(
           context,
-          '音量設定　',
+          '問題作成 ',
+          Colors.pink,
+          const Icon(Icons.create),
+          soundEffect,
+          2,
+          seVolume,
+        ),
+        const SizedBox(height: 25),
+        _selectButton(
+          context,
+          '音量設定 ',
           Colors.green,
           const Icon(Icons.music_note),
           soundEffect,
-          2,
+          3,
           seVolume,
         ),
       ],
@@ -85,6 +96,10 @@ class TitleButton extends HookWidget {
               StageSelectScreen.routeName,
             );
           } else if (buttonPattern == 2) {
+            Navigator.of(context).pushNamed(
+              OriginalMakingListScreen.routeName,
+            );
+          } else if (buttonPattern == 3) {
             AwesomeDialog(
               context: context,
               dialogType: DialogType.NO_HEADER,

@@ -237,7 +237,7 @@ void finishGame(
     width: MediaQuery.of(context).size.width * .86 > 500 ? 500 : null,
     borderSide: BorderSide(
       color: difficulty == 1
-          ? Colors.green.shade800
+          ? Colors.blue.shade800
           : difficulty == 2
               ? Colors.orange.shade800
               : Colors.purple.shade800,
@@ -260,6 +260,7 @@ void finishGame(
       isCleared: isCleared,
       thisWR: thisWR,
       isWR: isWR,
+      isOriginal: false,
     ),
   ).show();
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:fast_press/models/theme_item.model.dart';
 import 'package:fast_press/services/game_stage/finish_game.service.dart';
+import 'package:fast_press/services/game_stage/original_finish_game.service.dart';
 
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -20,24 +21,40 @@ void timeStart(
   int themeNumber,
   int clearQuantity,
   ValueNotifier<InterstitialAd?> interstitialAdState,
+  bool isOriginal,
 ) {
   Timer.periodic(
     const Duration(milliseconds: 100),
     (Timer timer) async {
       if (remainingTimeState.value <= 0.1 && remainingTimeState.value > 0) {
         // 終了
-        finishGame(
-          context,
-          soundEffect,
-          seVolume,
-          themeItem,
-          difficulty,
-          previousRecord,
-          recordState,
-          themeNumber,
-          clearQuantity,
-          interstitialAdState,
-        );
+        if (isOriginal) {
+          originalFinishGame(
+            context,
+            soundEffect,
+            seVolume,
+            themeItem,
+            difficulty,
+            previousRecord,
+            recordState,
+            themeNumber,
+            clearQuantity,
+            interstitialAdState,
+          );
+        } else {
+          finishGame(
+            context,
+            soundEffect,
+            seVolume,
+            themeItem,
+            difficulty,
+            previousRecord,
+            recordState,
+            themeNumber,
+            clearQuantity,
+            interstitialAdState,
+          );
+        }
 
         timer.cancel();
         remainingTimeState.value = 0.100011;

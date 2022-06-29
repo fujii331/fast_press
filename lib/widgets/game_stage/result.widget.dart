@@ -25,6 +25,7 @@ class Result extends HookWidget {
   final bool isCleared;
   final int thisWR;
   final bool isWR;
+  final bool isOriginal;
 
   const Result({
     Key? key,
@@ -44,6 +45,7 @@ class Result extends HookWidget {
     required this.isCleared,
     required this.thisWR,
     required this.isWR,
+    required this.isOriginal,
   }) : super(key: key);
 
   @override
@@ -99,23 +101,27 @@ class Result extends HookWidget {
                         ],
                       ),
                       const SizedBox(height: 15),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'テーマ',
-                            style: TextStyle(
-                              fontSize: 19,
-                              color: difficulty == 1
-                                  ? Colors.teal.shade600
+                      Text(
+                        'テーマ',
+                        style: TextStyle(
+                          fontSize: 19,
+                          color: isOriginal
+                              ? Colors.pink.shade600
+                              : difficulty == 1
+                                  ? Colors.blue.shade600
                                   : difficulty == 2
                                       ? Colors.deepOrange.shade500
                                       : Colors.deepPurple.shade500,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(width: 15),
-                          Stack(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * .86 > 550
+                            ? 400
+                            : MediaQuery.of(context).size.width * .70,
+                        child: Center(
+                          child: Stack(
                             children: <Widget>[
                               Text(
                                 themeItem.themeWord,
@@ -136,7 +142,7 @@ class Result extends HookWidget {
                               )
                             ],
                           ),
-                        ],
+                        ),
                       ),
                       const SizedBox(height: 30),
                       Row(
@@ -144,38 +150,42 @@ class Result extends HookWidget {
                         children: [
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
+                            children: [
+                              const Text(
                                 'クリア条件',
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,
                                 ),
                               ),
-                              SizedBox(height: 5),
-                              Text(
+                              const SizedBox(height: 5),
+                              const Text(
                                 '今回記録',
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,
                                 ),
                               ),
-                              SizedBox(height: 5),
-                              Text(
+                              const SizedBox(height: 5),
+                              const Text(
                                 '最高記録',
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,
                                 ),
                               ),
-                              SizedBox(height: 5),
-                              Text(
-                                '世界記録',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.black,
-                                ),
-                              ),
+                              isOriginal
+                                  ? Container()
+                                  : const Padding(
+                                      padding: EdgeInsets.only(top: 5),
+                                      child: Text(
+                                        '世界記録',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
                             ],
                           ),
                           const SizedBox(width: 30),
@@ -207,14 +217,19 @@ class Result extends HookWidget {
                                       : Colors.black,
                                 ),
                               ),
-                              const SizedBox(height: 5),
-                              Text(
-                                thisWR != 0 ? '$thisWR 回' : '-　',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: isWR ? Colors.red : Colors.black,
-                                ),
-                              ),
+                              isOriginal
+                                  ? Container()
+                                  : Padding(
+                                      padding: const EdgeInsets.only(top: 5),
+                                      child: Text(
+                                        thisWR != 0 ? '$thisWR 回' : '-　',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color:
+                                              isWR ? Colors.red : Colors.black,
+                                        ),
+                                      ),
+                                    ),
                             ],
                           ),
                         ],

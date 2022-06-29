@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:fast_press/models/theme_item.model.dart';
 import 'package:fast_press/providers/common.provider.dart';
@@ -27,6 +29,8 @@ class GamePlayScreen extends HookWidget {
     final previousRecord = args[2] as int;
     final themeNumber = args[3] as int;
 
+    final isOriginal = themeNumber == 0;
+
     final AudioCache soundEffect = useProvider(soundEffectProvider).state;
     final double seVolume = useProvider(seVolumeProvider).state;
 
@@ -51,7 +55,7 @@ class GamePlayScreen extends HookWidget {
           width: MediaQuery.of(context).size.width * .86 > 500 ? 500 : null,
           borderSide: BorderSide(
             color: difficulty == 1
-                ? Colors.green.shade800
+                ? Colors.blue.shade800
                 : difficulty == 2
                     ? Colors.orange.shade800
                     : Colors.purple.shade800,
@@ -70,6 +74,7 @@ class GamePlayScreen extends HookWidget {
             isInitial: true,
             themeNumber: themeNumber,
             interstitialAdState: interstitialAdState,
+            isOriginal: isOriginal,
           ),
         ).show();
 
@@ -90,8 +95,8 @@ class GamePlayScreen extends HookWidget {
               imagePath: 'background.jpg',
             ),
             Container(
-              margin: const EdgeInsets.only(
-                top: 30,
+              margin: EdgeInsets.only(
+                top: Platform.isAndroid ? 30 : 50,
                 bottom: 20,
               ),
               child: Column(
@@ -108,6 +113,7 @@ class GamePlayScreen extends HookWidget {
                     themeNumber: themeNumber,
                     recordMinus: recordMinusState.value,
                     interstitialAdState: interstitialAdState,
+                    isOriginal: isOriginal,
                   ),
                   const Spacer(),
                   TargetDisplay(

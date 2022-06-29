@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:fast_press/data/game_themes.dart';
 import 'package:fast_press/models/theme_item.model.dart';
 import 'package:fast_press/models/word_record.model.dart';
@@ -33,6 +31,12 @@ class StageSelectScreen extends HookWidget {
     final List<String> hardRecords = useProvider(hardRecordsProvider).state;
     final List<String> veryHardRecords =
         useProvider(veryHardRecordsProvider).state;
+    final List<String> originalNormalRecords =
+        useProvider(originalNormalRecordsProvider).state;
+    final List<String> originalHardRecords =
+        useProvider(originalHardRecordsProvider).state;
+    final List<String> originalVeryHardRecords =
+        useProvider(originalVeryHardRecordsProvider).state;
 
     final bool rebuild = useProvider(rebuildProvider).state;
 
@@ -42,6 +46,12 @@ class StageSelectScreen extends HookWidget {
     final double width = MediaQuery.of(context).size.width > 400
         ? 360
         : MediaQuery.of(context).size.width * 0.9;
+
+    final originalThemeItems = useProvider(originalThemeItemsProvider).state;
+
+    final originalNormalItemsState = useState<List<Widget>>([]);
+    final originalHardItemsState = useState<List<Widget>>([]);
+    final originalVeryHardItemsState = useState<List<Widget>>([]);
 
     final normalItemsState = useState<List<Widget>>([]);
     final hardItemsState = useState<List<Widget>>([]);
@@ -54,6 +64,8 @@ class StageSelectScreen extends HookWidget {
     final Map<int, int> normalWR = worldRecord.normal;
     final Map<int, int> hardWR = worldRecord.hard;
     final Map<int, int> veryHardWR = worldRecord.veryHard;
+
+    final isMainStageState = useState<bool>(true);
 
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -106,10 +118,10 @@ class StageSelectScreen extends HookWidget {
           }
         }
 
-        final normalRemainingWIdth = width - normalItemsState.value.length * 70;
+        final normalRemainingWidth = width - normalItemsState.value.length * 70;
 
-        if (normalRemainingWIdth > 70) {
-          final double normalBoxWidth = 70.0 * (normalRemainingWIdth ~/ 70);
+        if (normalRemainingWidth > 70) {
+          final double normalBoxWidth = 70.0 * (normalRemainingWidth ~/ 70);
           normalItemsState.value.add(SizedBox(width: normalBoxWidth));
         }
 
@@ -162,10 +174,10 @@ class StageSelectScreen extends HookWidget {
           }
         }
 
-        final hardRemainingWIdth = width - hardItemsState.value.length * 70;
+        final hardRemainingWidth = width - hardItemsState.value.length * 70;
 
-        if (hardRemainingWIdth > 70) {
-          final double hardBoxWidth = 70.0 * (hardRemainingWIdth ~/ 70);
+        if (hardRemainingWidth > 70) {
+          final double hardBoxWidth = 70.0 * (hardRemainingWidth ~/ 70);
           hardItemsState.value.add(SizedBox(width: hardBoxWidth));
         }
 
@@ -221,12 +233,67 @@ class StageSelectScreen extends HookWidget {
           }
         }
 
-        final veryHardRemainingWIdth =
+        final veryHardRemainingWidth =
             width - veryHardItemsState.value.length * 70;
 
-        if (veryHardRemainingWIdth > 70) {
-          final double veryHardBoxWidth = 70.0 * (veryHardRemainingWIdth ~/ 70);
+        if (veryHardRemainingWidth > 70) {
+          final double veryHardBoxWidth = 70.0 * (veryHardRemainingWidth ~/ 70);
           veryHardItemsState.value.add(SizedBox(width: veryHardBoxWidth));
+        }
+
+        // 作成したテーマを設定
+        originalNormalItemsState.value = [];
+        originalHardItemsState.value = [];
+        originalVeryHardItemsState.value = [];
+
+        for (int i = 0; i < originalThemeItems.length; i++) {
+          final themeItem = originalThemeItems[i];
+          originalNormalItemsState.value.insert(
+            0,
+            _originalBlock(
+              context,
+              soundEffect,
+              seVolume,
+              1,
+              int.parse(originalNormalRecords[i]),
+              themeItem,
+            ),
+          );
+
+          originalHardItemsState.value.insert(
+            0,
+            _originalBlock(
+              context,
+              soundEffect,
+              seVolume,
+              2,
+              int.parse(originalHardRecords[i]),
+              themeItem,
+            ),
+          );
+
+          originalVeryHardItemsState.value.insert(
+            0,
+            _originalBlock(
+              context,
+              soundEffect,
+              seVolume,
+              3,
+              int.parse(originalVeryHardRecords[i]),
+              themeItem,
+            ),
+          );
+        }
+
+        final originalThemeWidth =
+            width - originalNormalItemsState.value.length * 70;
+
+        if (originalThemeWidth > 70) {
+          final double originalBoxWidth = 70.0 * (originalThemeWidth ~/ 70);
+          originalNormalItemsState.value.add(SizedBox(width: originalBoxWidth));
+          originalHardItemsState.value.add(SizedBox(width: originalBoxWidth));
+          originalVeryHardItemsState.value
+              .add(SizedBox(width: originalBoxWidth));
         }
       });
       return null;
@@ -237,12 +304,11 @@ class StageSelectScreen extends HookWidget {
         image: DecorationImage(
           image: AssetImage('assets/images/background/background.jpg'),
           fit: BoxFit.cover,
-          opacity: 0.65,
+          opacity: 0.9,
         ),
       ),
       child: Scaffold(
-        backgroundColor: const Color(0x15555555),
-        extendBodyBehindAppBar: true,
+        backgroundColor: Colors.black.withOpacity(0.4),
         appBar: AppBar(
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
@@ -250,15 +316,43 @@ class StageSelectScreen extends HookWidget {
               bottomRight: Radius.circular(10),
             ),
           ),
-          title: const Text(
-            'ステージ選択',
-            style: TextStyle(
-              fontFamily: 'KaiseiOpti',
+          title: Text(
+            isMainStageState.value ? 'メインステージ' : '自作ステージ',
+            style: const TextStyle(
+              fontFamily: 'MPLUS1p',
+              fontSize: 22,
             ),
           ),
           elevation: 0,
           centerTitle: true,
-          backgroundColor: Colors.teal.shade900.withOpacity(0.95),
+          backgroundColor: isMainStageState.value
+              ? Colors.teal.shade900.withOpacity(0.95)
+              : Colors.pink.shade900.withOpacity(0.95),
+          actions: originalThemeItems.isNotEmpty
+              ? <Widget>[
+                  TextButton(
+                    child: Text(
+                      isMainStageState.value ? "自作" : "メイン",
+                      style: TextStyle(
+                        color: isMainStageState.value
+                            ? Colors.pink.shade100
+                            : Colors.teal.shade200,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onPressed: () {
+                      soundEffect.play(
+                        'sounds/tap.mp3',
+                        isNotification: true,
+                        volume: seVolume,
+                      );
+
+                      isMainStageState.value = !isMainStageState.value;
+                    },
+                  ),
+                ]
+              : [],
         ),
         body: PageView(
           controller: pageController,
@@ -267,9 +361,27 @@ class StageSelectScreen extends HookWidget {
             screenNo.value = index;
           },
           children: [
-            _page(height, width, normalItemsState.value),
-            _page(height, width, hardItemsState.value),
-            _page(height, width, veryHardItemsState.value),
+            _page(
+              height,
+              width,
+              isMainStageState.value
+                  ? normalItemsState.value
+                  : originalNormalItemsState.value,
+            ),
+            _page(
+              height,
+              width,
+              isMainStageState.value
+                  ? hardItemsState.value
+                  : originalHardItemsState.value,
+            ),
+            _page(
+              height,
+              width,
+              isMainStageState.value
+                  ? veryHardItemsState.value
+                  : originalVeryHardItemsState.value,
+            ),
           ],
         ),
         bottomNavigationBar: Stack(
@@ -278,7 +390,9 @@ class StageSelectScreen extends HookWidget {
               backgroundColor: Colors.brown.shade800,
               // type: BottomNavigationBarType.fixed,
               currentIndex: screenNo.value,
-              selectedItemColor: Colors.teal.shade900,
+              selectedItemColor: isMainStageState.value
+                  ? Colors.teal.shade900
+                  : Colors.pink.shade800,
               unselectedItemColor: Colors.grey.shade200,
               onTap: (int selectIndex) {
                 screenNo.value = selectIndex;
@@ -328,7 +442,7 @@ class StageSelectScreen extends HookWidget {
     List<Widget> items,
   ) {
     return Padding(
-      padding: EdgeInsets.only(top: Platform.isAndroid ? 90 : 120),
+      padding: const EdgeInsets.only(top: 10),
       child: Container(
         height: height,
         width: width,
@@ -338,8 +452,12 @@ class StageSelectScreen extends HookWidget {
         ),
         child: SingleChildScrollView(
           child: Center(
-            child: Wrap(
-              children: items,
+            child: Column(
+              children: [
+                Wrap(
+                  children: items,
+                ),
+              ],
             ),
           ),
         ),
@@ -367,13 +485,13 @@ class StageSelectScreen extends HookWidget {
             Container(
               decoration: BoxDecoration(
                 color: difficulty == 1
-                    ? Colors.green.shade50
+                    ? Colors.blue.shade50
                     : difficulty == 2
                         ? Colors.orange.shade50
                         : Colors.purple.shade50,
                 border: Border.all(
                   color: difficulty == 1
-                      ? Colors.green.shade700
+                      ? Colors.blue.shade700
                       : difficulty == 2
                           ? Colors.orange.shade700
                           : Colors.purple.shade700,
@@ -399,16 +517,20 @@ class StageSelectScreen extends HookWidget {
                     ],
                   );
                 },
-                child: Padding(
-                  padding: const EdgeInsets.all(5),
-                  child: Center(
-                    child: Text(
-                      themeItem.themeWord,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'MPLUS1p',
+                child: Center(
+                  child: SizedBox(
+                    width: 14 * 3,
+                    height: 14 * 3.2,
+                    child: Center(
+                      child: Text(
+                        themeItem.themeWord,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          height: 1.15,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'MPLUS1p',
+                        ),
                       ),
                     ),
                   ),
@@ -454,6 +576,74 @@ class StageSelectScreen extends HookWidget {
     );
   }
 
+  Widget _originalBlock(
+    BuildContext context,
+    AudioCache soundEffect,
+    double seVolume,
+    int difficulty,
+    int previousRecord,
+    ThemeItem themeItem,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
+      child: SizedBox(
+        height: 60,
+        width: 60,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.pink.shade50,
+            border: Border.all(
+              color: difficulty == 1
+                  ? Colors.blue.shade700
+                  : difficulty == 2
+                      ? Colors.orange.shade700
+                      : Colors.purple.shade700,
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: InkWell(
+            onTap: () {
+              soundEffect.play(
+                'sounds/tap.mp3',
+                isNotification: true,
+                volume: seVolume,
+              );
+
+              Navigator.of(context).pushNamed(
+                GamePlayScreen.routeName,
+                arguments: [
+                  themeItem,
+                  difficulty,
+                  previousRecord,
+                  0,
+                ],
+              );
+            },
+            child: Center(
+              child: SizedBox(
+                width: 14 * 3,
+                height: 14 * 3.2,
+                child: Center(
+                  child: Text(
+                    themeItem.themeWord,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      height: 1.15,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'MPLUS1p',
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _cannotPlayBlock(
     ThemeItem themeItem,
   ) {
@@ -470,16 +660,20 @@ class StageSelectScreen extends HookWidget {
           color: Colors.grey,
           borderRadius: BorderRadius.circular(15),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(5),
-          child: Center(
-            child: Text(
-              themeItem.themeWord,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'MPLUS1p',
+        child: Center(
+          child: SizedBox(
+            width: 14 * 3,
+            height: 14 * 3.2,
+            child: Center(
+              child: Text(
+                themeItem.themeWord,
+                style: const TextStyle(
+                  fontSize: 14,
+                  height: 1.15,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'MPLUS1p',
+                ),
               ),
             ),
           ),
@@ -503,13 +697,20 @@ class StageSelectScreen extends HookWidget {
           borderRadius: BorderRadius.circular(15),
         ),
         child: const Center(
-          child: Text(
-            '準備中',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'MPLUS1p',
+          child: SizedBox(
+            width: 14 * 3,
+            height: 14 * 3.2,
+            child: Center(
+              child: Text(
+                '準備中',
+                style: TextStyle(
+                  fontSize: 14,
+                  height: 1.15,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'MPLUS1p',
+                ),
+              ),
             ),
           ),
         ),

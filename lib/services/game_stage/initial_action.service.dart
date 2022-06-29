@@ -18,6 +18,7 @@ void initialAction(
   int themeNumber,
   int clearQuantity,
   ValueNotifier<InterstitialAd?> interstitialAdState,
+  bool isOriginal,
 ) async {
   // カウントダウン表示
   showDialog<int>(
@@ -55,5 +56,6 @@ void initialAction(
     themeNumber,
     clearQuantity,
     interstitialAdState,
+    isOriginal,
   );
 }

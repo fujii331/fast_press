@@ -1,3 +1,4 @@
+import 'package:fast_press/models/theme_item.model.dart';
 import 'package:fast_press/models/word_record.model.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -12,6 +13,11 @@ final veryHardClearedNumberProvider = StateProvider((ref) => 0);
 final normalRecordsProvider = StateProvider((ref) => <String>[]);
 final hardRecordsProvider = StateProvider((ref) => <String>[]);
 final veryHardRecordsProvider = StateProvider((ref) => <String>[]);
+final originalThemeItemsProvider = StateProvider((ref) => <ThemeItem>[]);
+final originalThemeTitlesProvider = StateProvider((ref) => <String>[]);
+final originalNormalRecordsProvider = StateProvider((ref) => <String>[]);
+final originalHardRecordsProvider = StateProvider((ref) => <String>[]);
+final originalVeryHardRecordsProvider = StateProvider((ref) => <String>[]);
 
 final rebuildProvider = StateProvider((ref) => false);
 final wordRecordProvider = StateProvider(

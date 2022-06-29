@@ -2,10 +2,13 @@
 
 import 'package:fast_press/providers/common.provider.dart';
 import 'package:fast_press/screens/game_play.screen.dart';
+import 'package:fast_press/screens/original_edit.screen.dart';
+import 'package:fast_press/screens/original_making_list.screen.dart';
 import 'package:fast_press/screens/stage_select.screen.dart';
 import 'package:fast_press/screens/title.screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -108,6 +111,7 @@ class MyApp extends HookWidget {
     return MaterialApp(
       title: 'なんでも早押し',
       debugShowCheckedModeBanner: false,
+      builder: EasyLoading.init(),
       theme: ThemeData(
         canvasColor: Colors.grey.shade100,
         fontFamily: 'SawarabiGothic',
@@ -141,6 +145,10 @@ class MyApp extends HookWidget {
             const StageSelectScreen(),
         GamePlayScreen.routeName: (BuildContext context) =>
             const GamePlayScreen(),
+        OriginalMakingListScreen.routeName: (BuildContext context) =>
+            const OriginalMakingListScreen(),
+        OriginalEditScreen.routeName: (BuildContext context) =>
+            const OriginalEditScreen(),
       },
       onUnknownRoute: (settings) {
         return MaterialPageRoute(

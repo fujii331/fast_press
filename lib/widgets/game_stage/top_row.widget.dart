@@ -18,6 +18,7 @@ class TopRow extends HookWidget {
   final int themeNumber;
   final bool recordMinus;
   final ValueNotifier<InterstitialAd?> interstitialAdState;
+  final bool isOriginal;
 
   const TopRow({
     Key? key,
@@ -32,6 +33,7 @@ class TopRow extends HookWidget {
     required this.themeNumber,
     required this.recordMinus,
     required this.interstitialAdState,
+    required this.isOriginal,
   }) : super(key: key);
 
   @override
@@ -114,6 +116,7 @@ class TopRow extends HookWidget {
                         isInitial: false,
                         themeNumber: themeNumber,
                         interstitialAdState: interstitialAdState,
+                        isOriginal: isOriginal,
                       ),
                     ).show();
                   }

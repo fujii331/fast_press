@@ -73,8 +73,12 @@ class SoundMode extends HookWidget {
             ),
             child: SliderTheme(
               data: SliderTheme.of(context).copyWith(
-                inactiveTickMarkColor: Colors.blue.shade100,
-                activeTickMarkColor: Colors.blue,
+                inactiveTickMarkColor: Colors.green.shade100,
+                activeTickMarkColor: Colors.green,
+                thumbColor: Colors.green.shade600,
+                activeTrackColor: Colors.green.shade500,
+                inactiveTrackColor: Colors.green.shade100,
+                overlayColor: Colors.green.withOpacity(0.15),
               ),
               child: Slider(
                 value: bgmVolume * 100,
@@ -113,8 +117,12 @@ class SoundMode extends HookWidget {
             ),
             child: SliderTheme(
               data: SliderTheme.of(context).copyWith(
-                inactiveTickMarkColor: Colors.blue.shade100,
-                activeTickMarkColor: Colors.blue,
+                inactiveTickMarkColor: Colors.green.shade100,
+                activeTickMarkColor: Colors.green,
+                thumbColor: Colors.green.shade600,
+                activeTrackColor: Colors.green.shade500,
+                inactiveTrackColor: Colors.green.shade100,
+                overlayColor: Colors.green.withOpacity(0.15),
               ),
               child: Slider(
                 value: seVolume * 100,

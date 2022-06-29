@@ -1,3 +1,4 @@
+import 'package:fast_press/models/theme_item.model.dart';
 import 'package:fast_press/models/word_record.model.dart';
 import 'package:fast_press/providers/common.provider.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -26,6 +27,15 @@ void firstSetting(BuildContext context) async {
   context.read(veryHardRecordsProvider).state =
       prefs.getStringList('veryHardRecords') ?? [];
 
+  context.read(originalNormalRecordsProvider).state =
+      prefs.getStringList('originalNormalRecords') ?? [];
+
+  context.read(originalHardRecordsProvider).state =
+      prefs.getStringList('originalHardRecords') ?? [];
+
+  context.read(originalVeryHardRecordsProvider).state =
+      prefs.getStringList('originalVeryHardRecords') ?? [];
+
   // 音量設定
   final double? bgmVolume = prefs.getDouble('bgmVolume');
   final double? seVolume = prefs.getDouble('seVolume');
@@ -45,6 +55,32 @@ void firstSetting(BuildContext context) async {
       .read(bgmProvider)
       .state
       .setVolume(context.read(bgmVolumeProvider).state);
+
+  // タイトル一覧からprefsにアクセス
+  // タイトルをキーにして作成していく
+  final titles = context.read(originalThemeTitlesProvider).state =
+      prefs.getStringList('originalThemeTitles') ?? [];
+
+  final themeItems = <ThemeItem>[];
+
+  for (String title in titles) {
+    final themeItemContents = prefs.getStringList('original-$title') ?? [];
+
+    if (themeItemContents.isNotEmpty) {
+      themeItems.add(
+        ThemeItem(
+          themeWord: title,
+          themeRule: themeItemContents[0],
+          clearQuantity: int.parse(themeItemContents[1]),
+          displayTargets:
+              themeItemContents.getRange(2, themeItemContents.length).toList(),
+          isImage: false,
+        ),
+      );
+    }
+  }
+
+  context.read(originalThemeItemsProvider).state = themeItems;
 
   context.read(soundEffectProvider).state.loadAll([
     'sounds/cancel.mp3',

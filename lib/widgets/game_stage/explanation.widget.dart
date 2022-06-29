@@ -24,6 +24,7 @@ class Explanation extends HookWidget {
   final bool isInitial;
   final int themeNumber;
   final ValueNotifier<InterstitialAd?> interstitialAdState;
+  final bool isOriginal;
 
   const Explanation({
     Key? key,
@@ -39,6 +40,7 @@ class Explanation extends HookWidget {
     required this.isInitial,
     required this.themeNumber,
     required this.interstitialAdState,
+    required this.isOriginal,
   }) : super(key: key);
 
   @override
@@ -50,7 +52,7 @@ class Explanation extends HookWidget {
         : difficulty == 2
             ? worldRecord.hard
             : worldRecord.veryHard;
-    final int thisWR = difficultyWR[themeNumber] ?? 0;
+    final int thisWR = isOriginal ? 0 : difficultyWR[themeNumber] ?? 0;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -92,35 +94,44 @@ class Explanation extends HookWidget {
                 'テーマ',
                 style: TextStyle(
                   fontSize: 19,
-                  color: difficulty == 1
-                      ? Colors.teal.shade600
-                      : difficulty == 2
-                          ? Colors.deepOrange.shade500
-                          : Colors.deepPurple.shade500,
+                  color: isOriginal
+                      ? Colors.pink.shade600
+                      : difficulty == 1
+                          ? Colors.blue.shade600
+                          : difficulty == 2
+                              ? Colors.deepOrange.shade500
+                              : Colors.deepPurple.shade500,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 5),
-              Stack(
-                children: <Widget>[
-                  Text(
-                    themeItem.themeWord,
-                    style: TextStyle(
-                      fontSize: 21,
-                      foreground: Paint()
-                        ..style = PaintingStyle.stroke
-                        ..strokeWidth = 0.7
-                        ..color = Colors.blueGrey.shade800,
-                    ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * .86 > 550
+                    ? 400
+                    : MediaQuery.of(context).size.width * .70,
+                child: Center(
+                  child: Stack(
+                    children: <Widget>[
+                      Text(
+                        themeItem.themeWord,
+                        style: TextStyle(
+                          fontSize: 21,
+                          foreground: Paint()
+                            ..style = PaintingStyle.stroke
+                            ..strokeWidth = 0.7
+                            ..color = Colors.blueGrey.shade800,
+                        ),
+                      ),
+                      Text(
+                        themeItem.themeWord,
+                        style: const TextStyle(
+                          fontSize: 21,
+                          color: Colors.black,
+                        ),
+                      )
+                    ],
                   ),
-                  Text(
-                    themeItem.themeWord,
-                    style: const TextStyle(
-                      fontSize: 21,
-                      color: Colors.black,
-                    ),
-                  )
-                ],
+                ),
               ),
               const SizedBox(height: 10),
               Stack(
@@ -167,30 +178,34 @@ class Explanation extends HookWidget {
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
+                    children: [
+                      const Text(
                         'クリア条件',
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.black,
                         ),
                       ),
-                      SizedBox(height: 5),
-                      Text(
+                      const SizedBox(height: 5),
+                      const Text(
                         '最高記録',
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.black,
                         ),
                       ),
-                      SizedBox(height: 5),
-                      Text(
-                        '世界記録',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black,
-                        ),
-                      ),
+                      isOriginal
+                          ? Container()
+                          : const Padding(
+                              padding: EdgeInsets.only(top: 5),
+                              child: Text(
+                                '世界記録',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
                     ],
                   ),
                   const SizedBox(width: 30),
@@ -212,14 +227,18 @@ class Explanation extends HookWidget {
                           color: Colors.black,
                         ),
                       ),
-                      const SizedBox(height: 5),
-                      Text(
-                        thisWR != 0 ? '$thisWR 回' : '-　',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black,
-                        ),
-                      ),
+                      isOriginal
+                          ? Container()
+                          : Padding(
+                              padding: const EdgeInsets.only(top: 5),
+                              child: Text(
+                                thisWR != 0 ? '$thisWR 回' : '-　',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
                     ],
                   ),
                 ],
@@ -322,6 +341,7 @@ class Explanation extends HookWidget {
                             themeNumber,
                             clearQuantity,
                             interstitialAdState,
+                            isOriginal,
                           );
                         }
                       : () async {
