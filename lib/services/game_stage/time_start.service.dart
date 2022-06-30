@@ -62,6 +62,16 @@ void timeStart(
 
       if (timerPlayingState.value) {
         remainingTimeState.value -= 0.10001;
+
+        if (remainingTimeState.value < 5 &&
+            remainingTimeState.value > 0.1 &&
+            ((remainingTimeState.value * 10).round() % 10 == 0)) {
+          soundEffect.play(
+            'sounds/time_limit.mp3',
+            isNotification: true,
+            volume: seVolume,
+          );
+        }
       }
 
       if (timer.isActive && remainingTimeState.value == 0) {

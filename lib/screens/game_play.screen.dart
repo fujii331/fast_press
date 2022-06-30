@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:fast_press/models/theme_item.model.dart';
 import 'package:fast_press/providers/common.provider.dart';
@@ -89,32 +87,38 @@ class GamePlayScreen extends HookWidget {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          toolbarHeight: 50,
+          automaticallyImplyLeading: false,
+          centerTitle: true,
+          title: TopRow(
+            soundEffect: soundEffect,
+            seVolume: seVolume,
+            themeItem: themeItem,
+            difficulty: difficulty,
+            previousRecord: previousRecord,
+            timerPlayingState: timerPlayingState,
+            remainingTimeState: remainingTimeState,
+            recordState: recordState,
+            themeNumber: themeNumber,
+            recordMinus: recordMinusState.value,
+            interstitialAdState: interstitialAdState,
+            isOriginal: isOriginal,
+          ),
+          backgroundColor: Colors.grey.shade900.withOpacity(0.8),
+        ),
         body: Stack(
           children: <Widget>[
             const BackImage(
               imagePath: 'background.jpg',
             ),
             Container(
-              margin: EdgeInsets.only(
-                top: Platform.isAndroid ? 30 : 50,
-                bottom: 20,
+              margin: const EdgeInsets.only(
+                top: 60,
               ),
               child: Column(
                 children: [
-                  TopRow(
-                    soundEffect: soundEffect,
-                    seVolume: seVolume,
-                    themeItem: themeItem,
-                    difficulty: difficulty,
-                    previousRecord: previousRecord,
-                    timerPlayingState: timerPlayingState,
-                    remainingTimeState: remainingTimeState,
-                    recordState: recordState,
-                    themeNumber: themeNumber,
-                    recordMinus: recordMinusState.value,
-                    interstitialAdState: interstitialAdState,
-                    isOriginal: isOriginal,
-                  ),
                   const Spacer(),
                   TargetDisplay(
                     soundEffect: soundEffect,
@@ -128,7 +132,6 @@ class GamePlayScreen extends HookWidget {
                     recordMinusState: recordMinusState,
                   ),
                   const Spacer(),
-                  const SizedBox(),
                 ],
               ),
             ),

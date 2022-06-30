@@ -41,12 +41,10 @@ class TopRow extends HookWidget {
     final double width = MediaQuery.of(context).size.width > 450
         ? 400
         : MediaQuery.of(context).size.width * 0.95;
-    return Container(
-      color: Colors.grey.shade900.withOpacity(0.8),
+    return SizedBox(
       width: width,
       child: Row(
         children: [
-          const SizedBox(width: 20),
           const Icon(
             Icons.circle_outlined,
             color: Colors.white,
@@ -58,6 +56,7 @@ class TopRow extends HookWidget {
             style: TextStyle(
               color: recordMinus ? Colors.red.shade300 : Colors.white,
               fontSize: 23,
+              fontFamily: 'MPLUS1p',
             ),
           ),
           const Spacer(),
@@ -74,6 +73,7 @@ class TopRow extends HookWidget {
                   ? Colors.red.shade300
                   : Colors.white,
               fontSize: 23,
+              fontFamily: 'MPLUS1p',
             ),
           ),
           const Spacer(),
@@ -122,7 +122,6 @@ class TopRow extends HookWidget {
                   }
                 : () {},
           ),
-          const SizedBox(width: 5),
         ],
       ),
     );

@@ -91,6 +91,7 @@ void firstSetting(BuildContext context) async {
     'sounds/ready.mp3',
     'sounds/start.mp3',
     'sounds/tap.mp3',
+    'sounds/time_limit.mp3',
     'sounds/true.mp3',
   ]);
 

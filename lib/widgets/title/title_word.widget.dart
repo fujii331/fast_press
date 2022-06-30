@@ -28,11 +28,11 @@ class TitleWord extends HookWidget {
                           ),
                         ),
                       ),
-                      width: 135,
+                      width: 155,
                       child: Stack(
                         children: <Widget>[
                           Text(
-                            '大人も子供も',
+                            '大人も子供も！',
                             style: TextStyle(
                               fontSize: 23,
                               fontFamily: 'YuseiMagic',
@@ -43,7 +43,7 @@ class TitleWord extends HookWidget {
                             ),
                           ),
                           Text(
-                            '大人も子供も',
+                            '大人も子供も！',
                             style: TextStyle(
                               fontSize: 23,
                               color: Colors.pink.shade200,
@@ -53,10 +53,11 @@ class TitleWord extends HookWidget {
                         ],
                       ),
                     ),
+                    const SizedBox(height: 10),
                     Stack(
                       children: <Widget>[
                         Text(
-                          '意外と\n頭の体操になる\n　　順番早押し',
+                          '頭の体操になる\n　　順番早押し',
                           style: TextStyle(
                             fontFamily: 'KaiseiOpti',
                             fontStyle: FontStyle.italic,
@@ -69,7 +70,7 @@ class TitleWord extends HookWidget {
                           ),
                         ),
                         Text(
-                          '意外と\n頭の体操になる\n　　順番早押し',
+                          '頭の体操になる\n　　順番早押し',
                           style: TextStyle(
                             fontSize: fontSize + 3,
                             fontFamily: 'YuseiMagic',

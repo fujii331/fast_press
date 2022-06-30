@@ -128,11 +128,11 @@ class TargetBlock extends HookWidget {
                   )
                 : Center(
                     child: Container(
-                      padding: EdgeInsets.only(
-                          top: targetContent.length < 7 ? 6 : 1),
                       // color: Colors.blue,
-                      width: fontSize * 3,
-                      height: fontSize * 2.86,
+                      padding: EdgeInsets.only(
+                          top: targetContent.length < 7 ? 7 : 4),
+                      width: fontSize * 3.1,
+                      height: fontSize * 3.15,
                       child: Center(
                         child: Text(
                           targetContent,
